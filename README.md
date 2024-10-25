@@ -5,6 +5,9 @@ I built this app to help simulate arbitrary log sources.  The app is configured 
 
 ## Supported protocols
 - HTTP
+- Syslog
 
 ## Supported formats
 - JSON
+- CEF
+- LEEF
