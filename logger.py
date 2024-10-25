@@ -1,4 +1,10 @@
+from abc import abstractmethod
+from datetime import datetime, timedelta
+import json
+import pytz
+import random
 import re
+import requests
 from enum import Enum
 
 class Protocol(Enum):
@@ -40,6 +46,12 @@ class Logger:
             dict: The dictionary of fields.
         """
         return self._fields
+
+    @abstractmethod
+    def send_log(self):
+        """
+        An abstract method that should be implemented by subclasses to send the log.
+        """
 
 class SyslogLogger(Logger):
     """
@@ -165,7 +177,7 @@ class HttpLogger(Logger):
         """
         super().__init__()
         self._url = None
-        self._send_format = SendFormat.JSON
+        self._send_format = HttpFormat.JSON
         self._api_key = None
 
     @property
@@ -217,3 +229,30 @@ class HttpLogger(Logger):
             value (str): The API key.
         """
         self._api_key = value
+
+    def send_log(self):
+        """
+        Sends the log message via HTTP.
+        """
+        if self.url is None or self.api_key is None:
+            raise ValueError("URL and API key must be set before sending a log.")
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': self.api_key
+        }
+
+        log = {}
+
+        for k, v in self.fields:
+            if k == 'timestamp_format':
+                log['timestamp'] = (datetime.now(pytz.utc) + timedelta(0,-3)).strftime(v)
+            else:
+                log[k] = random.choice(v.items())
+        
+        try:
+            response = requests.post(self.url, headers=headers, data=json.dumps(self.fields))
+            response.raise_for_status()  # Raise an exception for bad status codes
+            print("Log sent successfully!")
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred while sending the log: {e}")
