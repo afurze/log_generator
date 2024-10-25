@@ -8,11 +8,17 @@ class Protocol(Enum):
     TCP = "TCP"
     UDP = "UDP"
 
-class Format(Enum):
+class SyslogFormat(Enum):
     """
-    Enum class to represent valid formats.
+    Enum class to represent valid syslog formats.
     """
     CEF = "CEF"
+
+class HttpFormat(Enum):
+    """
+    Enum class to represent valid http data formats
+    """
+    JSON = "JSON"
 
 class Logger:
     """
@@ -135,7 +141,7 @@ class SyslogLogger(Logger):
         return self._format
 
     @format.setter
-    def format(self, value: Format):
+    def format(self, value: SyslogFormat):
         """
         Sets the format.
 
@@ -145,6 +151,69 @@ class SyslogLogger(Logger):
         Raises:
             ValueError: If the provided value is not a valid Format enum member.
         """
-        if value not in Format:
-            raise ValueError(f"Invalid format: {value}. Must be one of {list(Format)}.")
+        if value not in SyslogFormat:
+            raise ValueError(f"Invalid format: {value}. Must be one of {list(SyslogFormat)}.")
         self._format = value
+
+class HttpLogger(Logger):
+    """
+    A class to represent a logger specifically for HTTP logs.
+    """
+    def __init__(self):
+        """
+        Initializes the HttpLogger object.
+        """
+        super().__init__()
+        self._url = None
+        self._send_format = SendFormat.JSON
+        self._api_key = None
+
+    @property
+    def url(self):
+        """
+        Returns the URL.
+
+        Returns:
+            str: The URL.
+        """
+        return self._url
+
+    @url.setter
+    def url(self, value: str):
+        """
+        Sets the URL.
+
+        Args:
+            value (str): The URL.
+        """
+        self._url = value
+
+    @property
+    def send_format(self):
+        """
+        Returns the send format.
+
+        Returns:
+            SendFormat: The send format.
+        """
+        return self._send_format
+
+    @property
+    def api_key(self):
+        """
+        Returns the API key.
+
+        Returns:
+            str: The API key.
+        """
+        return self._api_key
+
+    @api_key.setter
+    def api_key(self, value: str):
+        """
+        Sets the API key.
+
+        Args:
+            value (str): The API key.
+        """
+        self._api_key = value
