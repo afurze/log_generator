@@ -59,7 +59,7 @@ class Logger:
         Args:
             value (dict): the fields.
         """
-        self._url = value
+        self._fields = value
         
 
     @abstractmethod
@@ -274,15 +274,17 @@ class HttpLogger(Logger):
 
         log = {}
 
-        for k, v in self.fields:
+        logging.debug(self.fields)
+
+        for k, v in self.fields.items():
             if k == 'timestamp_format':
                 log['timestamp'] = (datetime.now(pytz.utc) + timedelta(0,-3)).strftime(v)
             else:
-                log[k] = random.choice(v.items())
+                log[k] = random.choice(v)
         
         try:
             logging.debug(f"Sending log message: {log}")
-            response = requests.post(self.url, headers=headers, data=json.dumps(self.fields))
+            response = requests.post(self.url, headers=headers, data=json.dumps(log))
             response.raise_for_status()  # Raise an exception for bad status codes
             logging.debug("Log sent successfully!")
         except requests.exceptions.RequestException as e:
