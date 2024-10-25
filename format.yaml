@@ -1,0 +1,30 @@
+---
+loggers:
+  idp:
+    collector_type: HTTP
+    url: https://api-csxsiam.xdr.us.paloaltonetworks.com/logs/v1/event
+    send_format: json
+    API_KEY: MTA4OnNWWlp2aFEyV2xtdll0UXIyT3plYjZPRFl1T2xxRmtCbm9GZW9jR0JCMFpTZDd6REZYTDRaeHVZd01KeVJJeU5tcTdOWlJaRktJeWk4VGFBQVdrYTFXOElnRFBrNzBhOEhaYnlXN3NINHdtdkdnSkZvRjJDZnpDaVdYVDM4Z1RV
+    timestamp_format: "%d/%m/%YT%H:%M:%S%z"
+    fields:
+      instance:
+        - demo-1
+        - dev-1
+        - prod-1
+      event:
+        - login
+        - logout
+      result:
+        - success
+        - fail
+      user:
+        - steve
+        - jane
+        - javier
+        - admin
+      ip:
+        - 1.1.1.1
+        - 102.234.2.8
+        - 8.8.8.8
+        - 32.99.8.104
+      
