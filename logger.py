@@ -2,6 +2,7 @@ from abc import abstractmethod
 from datetime import datetime, timedelta
 import json
 import logging
+import socket
 import pytz
 import random
 import re
@@ -23,6 +24,7 @@ class SyslogFormat(Enum):
     Enum class to represent valid syslog formats.
     """
     CEF = "CEF"
+    LEEF = "LEEF"
 
 class HttpFormat(Enum):
     """
@@ -181,6 +183,50 @@ class SyslogLogger(Logger):
         if value not in SyslogFormat:
             raise ValueError(f"Invalid format: {value}. Must be one of {list(SyslogFormat)}.")
         self._format = value
+
+    def send_log(self):
+        """
+        Sends the log message via Syslog.
+        """
+        if self.destination_ip is None:
+            raise ValueError("Destination IP must be set before sending a log.")
+        
+        log = {}
+
+        logging.debug(self.fields)
+
+        for k, v in self.fields.items():
+            if k == 'timestamp_format':
+                log['timestamp'] = (datetime.now(pytz.utc) + timedelta(0,-3)).strftime(v)
+            else:
+                log[k] = random.choice(v)
+
+        # Format the message based on the selected format
+        if self.format == SyslogFormat.CEF:
+            log_message = 'CEF:0|'  # Start with CEF header
+            for key, value in log.items():
+                log_message += f'{key}={value} '
+        elif self.format == SyslogFormat.LEEF:
+            log_message = 'LEEF:1.0|'  # Start with LEEF header
+            for key, value in log.items():
+                log_message += f'{key}="{value}" '
+        
+        if self.protocol == Protocol.UDP:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        elif self.protocol == Protocol.TCP:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((self.destination_ip, self.port))
+        else:
+            raise ValueError(f"Unsupported protocol: {self.protocol}")
+
+        try:
+            logging.debug(f"Sending log message: {log_message}")
+            sock.sendto(log_message.encode(), (self.destination_ip, self.port))
+            logging.debug("Log sent successfully!")
+        except Exception as e:
+            logging.exception(f"An error occurred while sending the log: {e}")
+        finally:
+            sock.close()
 
 class HttpLogger(Logger):
     """
