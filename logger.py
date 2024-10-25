@@ -220,6 +220,21 @@ class HttpLogger(Logger):
             SendFormat: The send format.
         """
         return self._send_format
+    
+    @send_format.setter
+    def send_format(self, value: HttpFormat):
+        """
+        Sets the format.
+
+        Args:
+            value (Format): The format.
+
+        Raises:
+            ValueError: If the provided value is not a valid Format enum member.
+        """
+        if value not in HttpFormat:
+            raise ValueError(f"Invalid format: {value}. Must be one of {list(HttpFormat)}.")
+        self._format = value
 
     @property
     def api_key(self):
