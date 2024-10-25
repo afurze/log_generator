@@ -27,4 +27,7 @@ loggers:
         - 102.234.2.8
         - 8.8.8.8
         - 32.99.8.104
-      
+
+general:
+  logs_to_send: 10
+  delay: 1

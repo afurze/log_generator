@@ -1,3 +1,4 @@
+from asyncio import sleep
 import logging
 from logger import HttpLogger, HttpFormat
 import yaml
@@ -20,6 +21,9 @@ def main():
     config = read_yaml('format.yaml')
     loggers_config = config['loggers']
 
+    log_send_count = config['general']['logs_to_send']
+    delay = config['general']['delay']
+
     loggers = []
 
     for k, v in loggers_config.items():
@@ -33,8 +37,10 @@ def main():
 
             loggers.append(logger)
 
-    for l in loggers:
-        l.send_log()
+    for i in range(0, log_send_count):
+        for l in loggers:
+            l.send_log()
+        sleep(delay)
 
 if __name__ == "__main__":
     main()
