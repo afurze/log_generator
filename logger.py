@@ -46,6 +46,17 @@ class Logger:
             dict: The dictionary of fields.
         """
         return self._fields
+    
+    @fields.setter
+    def fields(self, value: dict):
+        """
+        Sets the fields.
+
+        Args:
+            value (dict): the fields.
+        """
+        self._url = value
+        
 
     @abstractmethod
     def send_log(self):
