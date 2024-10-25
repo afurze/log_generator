@@ -1,11 +1,15 @@
 from abc import abstractmethod
 from datetime import datetime, timedelta
 import json
+import logging
 import pytz
 import random
 import re
 import requests
 from enum import Enum
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 class Protocol(Enum):
     """
@@ -277,8 +281,9 @@ class HttpLogger(Logger):
                 log[k] = random.choice(v.items())
         
         try:
+            logging.debug(f"Sending log message: {log}")
             response = requests.post(self.url, headers=headers, data=json.dumps(self.fields))
             response.raise_for_status()  # Raise an exception for bad status codes
-            print("Log sent successfully!")
+            logging.debug("Log sent successfully!")
         except requests.exceptions.RequestException as e:
-            print(f"An error occurred while sending the log: {e}")
+            logging.exception(f"An error occurred while sending the log: {e}")
