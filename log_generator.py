@@ -3,7 +3,6 @@ from datetime import timedelta
 import pytz
 import random
 import requests
-import time
 
 
 def test_http_collector(body):
@@ -50,7 +49,7 @@ ip = [
     '32.99.8.104'
 ]
 
-for x in range(1,100):
+for x in range(1,2):
     log = {
         'timestamp': (datetime.now(pytz.utc) + timedelta(0,-3)).strftime('%d/%m/%YT%H:%M:%S%z'),
         'instance': random.choice(instance),

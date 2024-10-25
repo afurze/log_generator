@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  loggenerator:
+    image: loggenerator
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: ["sh", "-c", "pip install debugpy -t /tmp && python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 log_generator.py "]
+    ports:
+      - 5678:5678
